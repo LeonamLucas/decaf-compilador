@@ -70,10 +70,10 @@ WS_ : [ \t\r\n]+ -> skip;
 
 SL_COMMENT : '//' (~'\n')* '\n' -> skip;
 
-ID  : (LETRA|'_')(LETRA|NUM|'_')+|LETRA;
-CHAR : '\'' (ESCCHAR|LETRA|NUM) '\'';
+ID  : (LETRA|'_')(LETRA|NUM|'_')*;
+CHAR : '\'' (ESC|LETRA|NUM|ESCCHAR) '\'';
 STRING : '"'(LETRA|NUM|ESCSTR)* '"';
-INTLITERAL : NUM+ (~'x');
+INTLITERAL : NUM+;
 HEXLITERAL : '0''x'(LETRA|NUM)+;
 
 fragment ESC :  '\\' ('n'|'t'|'\\'|'"');
