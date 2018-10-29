@@ -32,9 +32,9 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
 
     @Override
     public void enterMethod_decl(DecafParser.Method_declContext ctx) {
-        String name = ctx.ID().getText();
-        int typeTokenType = ctx.type().start.getType();
-        DecafSymbol.Type type = this.getType(typeTokenType);
+        String name = ctx.ID().get(0).getText();
+        //int typeTokenType = ctx.type().start.getType();
+        //DecafSymbol.Type type = this.getType(typeTokenType);
 
         // push new scope by making new one that points to enclosing scope
         FunctionSymbol function = new FunctionSymbol(name);
@@ -45,7 +45,7 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
         pushScope(function);
     }
 
-    @Override
+    /*@Override
     public void exitMethod_decl(DecafParser.Method_declContext ctx) {
         popScope();
     }
@@ -63,12 +63,12 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     }
 
     @Override
-    public void enterDecl(DecafParser.field_decl ctx) {
+    public void enterDecl(DecafParser.Field_declContext ctx) {
         defineVar(ctx.type(), ctx.ID().getSymbol());
     }
 
     @Override
-    public void exitDecl(DecafParser.field_decl ctx) {
+    public void exitDecl(DecafParser.Field_declContext ctx) {
         String name = ctx.ID().getSymbol().getText();
         Symbol var = currentScope.resolve(name);
         if ( var==null ) {
@@ -88,12 +88,13 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
 
         currentScope.define(var); // Define symbol in current scope
     }
-
+*/
     /**
      * Método que atuliza o escopo para o atual e imprime o valor
      *
      * @param s
      */
+
     private void pushScope(Scope s) {
         currentScope = s;
         System.out.println("entering: "+currentScope.getName()+":"+s);
@@ -131,7 +132,7 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     public static DecafSymbol.Type getType(int tokenType) {
         switch ( tokenType ) {
             case DecafParser.VOID :  return DecafSymbol.Type.tVOID;
-            case DecafParser.INTEGER_LITERAL :   return DecafSymbol.Type.tINT;
+            case DecafParser.INTLITERAL :   return DecafSymbol.Type.tINT;
         }
         return DecafSymbol.Type.tINVALID;
     }

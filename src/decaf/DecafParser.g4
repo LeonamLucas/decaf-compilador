@@ -10,9 +10,9 @@ options
   tokenVocab=DecafLexer;
 }
 
-
-
 program: CLASS PROGRAM LCURLY field_decl* method_decl* RCURLY EOF;
+
+
 
 field_decl: type id (COMMA type id)* SEMICOLON;
 
@@ -64,5 +64,3 @@ literal: int_literal | CHAR | BOOLEANLITERAL;
 int_literal: INTLITERAL | HEXLITERAL;
 
 id: ID | ID COLCE? int_literal COLCD?;
-
-
