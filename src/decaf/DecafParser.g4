@@ -10,6 +10,7 @@ options
   tokenVocab=DecafLexer;
 }
 
+
 method_type: type ID;
 
 program: CLASS PROGRAM LCURLY (declaration)* (method)* RCURLY;
@@ -20,7 +21,7 @@ method: (type | VOID) ID PARE(method_type(COMMA method_type)*)? PARD block;
 
 block: LCURLY var_declaration* statement* RCURLY;
 
-var_declaration: method_type (COMMA ID)* SEMICOLON;
+var_declaration: type ID (COMMA ID)* SEMICOLON;
 
 type: INT | BOOLEAN;
 

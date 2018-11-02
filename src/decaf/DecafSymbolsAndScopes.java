@@ -1,4 +1,6 @@
 package decaf;
+
+import java.util.ArrayList;
 import org.antlr.symtab.FunctionSymbol;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.LocalScope;
@@ -16,9 +18,10 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
  */
 public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+    ArrayList<String> varlist = new ArrayList();
     GlobalScope globals;
-    int aux[] = new int[3];
     Scope currentScope; // define symbols in this scope
+    String sup = null;
 
     @Override
     public void enterProgram(DecafParser.ProgramContext ctx) {
@@ -28,48 +31,31 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
 
     @Override
     public void exitProgram(DecafParser.ProgramContext ctx) {
+        popScope();
         System.out.println(globals);
     }
-
+    
     @Override
-    public void enterMethod(DecafParser.MethodContext ctx) {
-        
+    public void enterVar_declaration(DecafParser.Var_declarationContext ctx) {
+        String varr = ctx.ID(0).getSymbol().getText(); 
+        sup = varr;
+
+
     }
-
-    @Override
-    public void exitMethod(DecafParser.MethodContext ctx) {
-        popScope();
-    }
-
-
-    @Override
-        public void enterVar_declaration(DecafParser.Var_declarationContext ctx) {
-        //String name = ctx.start.getText();
-        //FunctionSymbol function = new FunctionSymbol(name);
-        //currentScope.define(function); // Define function in current scope
-        //saveScope(ctx, function);
-        //pushScope(function);
-        VariableSymbol var = new VariableSymbol(ctx.ID().getText());
-         }
     @Override 
-        public void exitVar_declaration(DecafParser.Var_declarationContext ctx) {
-
-
-
-        }
-
-    void defineVar(DecafParser.TypeContext typeCtx, Token nameToken) {
-        int typeTokenType = typeCtx.start.getType();
-        VariableSymbol var = new VariableSymbol(nameToken.getText());
-
-        // DecafSymbol.Type type = this.getType(typeTokenType);
-        // var.setType(type);
-
-        currentScope.define(var); // Define symbol in current scope
+    public void exitVar_declaration(DecafParser.Var_declarationContext ctx) {
+            if(varlist.contains(sup) == false){
+                varlist.add(sup);
+            }else{
+                error(ctx.ID(0).getSymbol(), "Nome de variavel repetido");
+                System.exit(0);
+            }
     }
+
+    
 
     /**
-     * Método que atuliza o escopo para o atual e imprime o valor
+     * Método que atualiza o escopo para o atual e imprime o valor
      *
      * @param s
      */
