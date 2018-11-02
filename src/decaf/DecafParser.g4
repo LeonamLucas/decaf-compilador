@@ -10,17 +10,17 @@ options
   tokenVocab=DecafLexer;
 }
 
-program: CLASS PROGRAM LCURLY field_decl* method_decl* RCURLY EOF;
+program: CLASS PROGRAM LCURLY (declaration)* (method)* RCURLY;
 
+declaration: (method_type (COMMA method_type)* | method_type COLCE int_literal COLCD (COMMA method_type COLCE int_literal COLCD)*) SEMICOLON;
 
+method: (type | VOID) ID PARE(method_type(COMMA method_type)*)? PARD block;
 
-field_decl: type id (COMMA type id)* SEMICOLON;
+block: LCURLY var_declaration* statement* RCURLY;
 
-method_decl: (type|VOID) ID PARE (type ID (COMMA type ID)*)? PARD block;
+var_declaration: method_type(COMMA ID)* SEMICOLON;
 
-block: LCURLY var_decl* statement* RCURLY;
-
-var_decl: type ID (COMMA ID)* SEMICOLON;
+method_type: type ID;
 
 type: INT | BOOLEAN;
 
@@ -35,7 +35,11 @@ statement: location assign_op expr SEMICOLON
 
 assign_op: ATRIB | DECR | INC;
 
-method_call: ID PARE (expr (COMMA expr)*)? PARD | CALLOUT PARE STRING (COMMA callout_arg(COMMA callout_arg)*)? PARD;
+method_call: method_name PARE (expr (COMMA expr)*)? PARD | CALLOUT PARE STRING (COMMA callout_arg(COMMA callout_arg)*)? PARD;
+
+callout_arg: expr | STRING;
+
+method_name: ID | ID COLCE expr COLCD;
 
 location: ID | ID COLCE expr COLCD;
 
@@ -46,8 +50,6 @@ expr: location
     | MENOS expr
     | INTERR expr
     | PARE expr PARD;
-
-callout_arg: expr | STRING;
 
 bin_op: arith_op | rel_op | eq_op | cond_op;
 
@@ -61,6 +63,20 @@ cond_op: E|OU;
 
 literal: int_literal | CHAR | BOOLEANLITERAL;
 
-int_literal: INTLITERAL | HEXLITERAL;
+alpha_num: alpha | digit;
 
-id: ID | ID COLCE? int_literal COLCD?;
+alpha: LETRA;
+
+digit: INTLITERAL;
+
+int_literal: INTLITERAL;
+
+decimal_literal: digit digit*;
+
+hex_literal: HEXLITERAL;
+
+bool_literal: BOOLEANLITERAL;
+
+char_literal: CHAR;
+
+string_literal: STRING;
