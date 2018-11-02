@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     GlobalScope globals;
+    int aux[] = new int[3];
     Scope currentScope; // define symbols in this scope
 
     @Override
@@ -31,53 +32,31 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     }
 
     @Override
-    public void enterMethod_decl(DecafParser.Method_declContext ctx) {
-        String name = ctx.ID().get(0).getText();
-        //int typeTokenType = ctx.type().start.getType();
-        //DecafSymbol.Type type = this.getType(typeTokenType);
-
-        // push new scope by making new one that points to enclosing scope
-        FunctionSymbol function = new FunctionSymbol(name);
-        // function.setType(type); // Set symbol type
-
-        currentScope.define(function); // Define function in current scope
-        saveScope(ctx, function);
-        pushScope(function);
+    public void enterMethod(DecafParser.MethodContext ctx) {
+        
     }
 
-    /*@Override
-    public void exitMethod_decl(DecafParser.Method_declContext ctx) {
+    @Override
+    public void exitMethod(DecafParser.MethodContext ctx) {
         popScope();
     }
 
-    @Override
-    public void enterBlock(DecafParser.BlockContext ctx) {
-        LocalScope l = new LocalScope(currentScope);
-        saveScope(ctx, currentScope);
-        // pushScope(l);
-    }
 
     @Override
-    public void exitBlock(DecafParser.BlockContext ctx) {
-        popScope();
-    }
+        public void enterVar_declaration(DecafParser.Var_declarationContext ctx) {
+        //String name = ctx.start.getText();
+        //FunctionSymbol function = new FunctionSymbol(name);
+        //currentScope.define(function); // Define function in current scope
+        //saveScope(ctx, function);
+        //pushScope(function);
+        VariableSymbol var = new VariableSymbol(ctx.ID().getText());
+         }
+    @Override 
+        public void exitVar_declaration(DecafParser.Var_declarationContext ctx) {
 
-    @Override
-    public void enterDecl(DecafParser.Field_declContext ctx) {
-        defineVar(ctx.type(), ctx.ID().getSymbol());
-    }
 
-    @Override
-    public void exitDecl(DecafParser.Field_declContext ctx) {
-        String name = ctx.ID().getSymbol().getText();
-        Symbol var = currentScope.resolve(name);
-        if ( var==null ) {
-            this.error(ctx.ID().getSymbol(), "no such variable: "+name);
+
         }
-        if ( var instanceof FunctionSymbol ) {
-            this.error(ctx.ID().getSymbol(), name+" is not a variable");
-        }
-    }
 
     void defineVar(DecafParser.TypeContext typeCtx, Token nameToken) {
         int typeTokenType = typeCtx.start.getType();
@@ -88,7 +67,7 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
 
         currentScope.define(var); // Define symbol in current scope
     }
-*/
+
     /**
      * Método que atuliza o escopo para o atual e imprime o valor
      *
