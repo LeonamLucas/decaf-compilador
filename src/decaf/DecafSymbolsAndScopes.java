@@ -79,7 +79,29 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
         //}
         metlist.add(ctx.ID().getSymbol().getText());
     }
+    @Override
+    public void enterDeclaration(DecafParser.DeclarationContext ctx) { 
+        
+    }
 	
+    @Override 
+    public void exitDeclaration(DecafParser.DeclarationContext ctx) {
+        for(int i = 0; i < ctx.method_type().size(); i++){
+            sup = ctx.method_type(i).ID().getSymbol().getText();
+            if(varlist.contains(sup) == true){
+                error(ctx.method_type(i).ID().getSymbol(), "Variável com nome duplicado");
+            }else{
+                for (int j = 0; j < ctx.int_literal().size(); j++) {
+                    if (Integer.parseInt(ctx.int_literal(j).INTLITERAL().getSymbol().getText()) > 0) {
+                        varlist.add(sup);
+                    }else{
+                        error(ctx.method_type(i).ID().getSymbol(), "Tamanho do vetor inválido");
+                    }
+                }
+                
+            } 
+        }
+    }
 
 
 
