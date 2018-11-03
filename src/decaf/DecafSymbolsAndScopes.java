@@ -1,6 +1,7 @@
 package decaf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import org.antlr.symtab.FunctionSymbol;
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.LocalScope;
@@ -12,6 +13,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import decaf.DecafParser.StatementContext;
+
 
 /**
  * This class defines basic symbols and scopes for Decaf language
@@ -19,9 +22,10 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     ArrayList<String> varlist = new ArrayList();
+    ArrayList<String> metlist = new ArrayList();
     GlobalScope globals;
     Scope currentScope; // define symbols in this scope
-    String sup = null;
+    String sup = "vazio";
 
     @Override
     public void enterProgram(DecafParser.ProgramContext ctx) {
@@ -31,29 +35,55 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
 
     @Override
     public void exitProgram(DecafParser.ProgramContext ctx) {
+        if(metlist.contains("main") == false){
+            error(ctx.CLASS().getSymbol(), "Classe sem método main");
+        }
         popScope();
         System.out.println(globals);
+        
     }
     
     @Override
     public void enterVar_declaration(DecafParser.Var_declarationContext ctx) {
-        String varr = ctx.ID(0).getSymbol().getText(); 
-        sup = varr;
-
-
-    }
-    @Override 
-    public void exitVar_declaration(DecafParser.Var_declarationContext ctx) {
-            if(varlist.contains(sup) == false){
-                varlist.add(sup);
+        for(int i = 0; i < ctx.ID().size(); i++){
+            sup = ctx.ID(i).getSymbol().getText();
+            if(varlist.contains(sup) == true){
+                error(ctx.ID(i).getSymbol(), "Variável com nome duplicado");
             }else{
-                error(ctx.ID(0).getSymbol(), "Nome de variavel repetido");
-                System.exit(0);
-            }
+                varlist.add(sup);
+            } 
+        }
     }
+    @Override
+    public void enterStatement(StatementContext ctx) {
+        
+    }
+	
+	@Override
+    public void exitStatement(DecafParser.StatementContext ctx) {
+        
+        if(varlist.contains(sup) == false){
+            error(ctx.location().ID().getSymbol(), "Variável não declarada");
+        }
+
+    }
+    @Override
+    public void enterMethod(DecafParser.MethodContext ctx) {
+        
+     }
+	
+    @Override
+    public void exitMethod(DecafParser.MethodContext ctx) { 
+       // if(ctx.ID().getSymbol() != null){
+
+        //}
+        metlist.add(ctx.ID().getSymbol().getText());
+    }
+	
+
+
 
     
-
     /**
      * Método que atualiza o escopo para o atual e imprime o valor
      *
