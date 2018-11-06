@@ -23,6 +23,7 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     ArrayList<String> varlist = new ArrayList();
     ArrayList<String> metlist = new ArrayList();
+    ArrayList<String> paramlist = new ArrayList();
     GlobalScope globals;
     Scope currentScope; // define symbols in this scope
     String sup = "vazio";
@@ -51,6 +52,7 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
                 error(ctx.ID(i).getSymbol(), "Variável com nome duplicado");
             }else{
                 varlist.add(sup);
+                defineVar(ctx.type(), ctx.ID(i).getSymbol());
             } 
         }
     }
@@ -69,19 +71,35 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
     }
     @Override
     public void enterMethod(DecafParser.MethodContext ctx) {
-        
+        String name = ctx.ID().getText();
+
+        // push new scope by making new one that points to enclosing scope
+        FunctionSymbol function = new FunctionSymbol(name);
+
+        currentScope.define(function); // Define function in current scope
+        saveScope(ctx, function);
+        pushScope(function);
      }
 	
     @Override
     public void exitMethod(DecafParser.MethodContext ctx) { 
-       // if(ctx.ID().getSymbol() != null){
-
-        //}
         metlist.add(ctx.ID().getSymbol().getText());
+        popScope();
+    }
+
+    @Override
+    public void enterBlock(DecafParser.BlockContext ctx) {
+        LocalScope l = new LocalScope(currentScope);
+        saveScope(ctx, currentScope);
+        pushScope(l);
+    }
+
+    @Override
+    public void exitBlock(DecafParser.BlockContext ctx) {
+        popScope();
     }
     @Override
     public void enterDeclaration(DecafParser.DeclarationContext ctx) { 
-        
     }
 	
     @Override 
@@ -101,6 +119,11 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
                 
             } 
         }
+    }
+
+    void defineVar(DecafParser.TypeContext typeCtx, Token nameToken) {
+        VariableSymbol var = new VariableSymbol(nameToken.getText());
+        currentScope.define(var); // Define symbol in current scope
     }
 
 
