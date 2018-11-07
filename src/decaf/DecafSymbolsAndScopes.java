@@ -93,6 +93,9 @@ public class DecafSymbolsAndScopes extends DecafParserBaseListener {
         saveScope(ctx, currentScope);
         pushScope(l);
     }
+    @Override public void enterMethod_type(DecafParser.Method_typeContext ctx) {
+	defineVar(ctx.type(), ctx.ID().getSymbol());
+    }
 
     @Override
     public void exitBlock(DecafParser.BlockContext ctx) {
